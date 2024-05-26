@@ -8,38 +8,6 @@
 import UIKit
 
 
-//func handleCrash(exception: NSException) {
-//    print("Crash occurred: \(exception)")
-//
-//    // Extract crash information
-//    let name = exception.name.rawValue
-//    let reason = exception.reason ?? "No reason provided"
-//    let callStack = exception.callStackSymbols.joined(separator: "\n")
-//
-//    // Format crash details
-//    let crashReport = """
-//    **Crash Report**
-//
-//    Name: \(name)
-//    Reason: \(reason)
-//    Call Stack:
-//
-//    \(callStack)
-//    """
-//
-//    // Save crash report to a file
-//    let fileName = "crash_log.txt"
-//    let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-//    let filePath = documentsPath.appendingPathComponent(fileName)
-//
-//    do {
-//        try crashReport.write(to: filePath, atomically: true, encoding: .utf8)
-//        print("Crash report saved to: \(filePath)")
-//    } catch {
-//        print("Error saving crash report: \(error)")
-//    }
-//}
-
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -50,6 +18,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         NSSetUncaughtExceptionHandler { exception in
             AppDelegate.handleCrash(exception: exception)
         }
+        
+        // Set up signal handlers
+        setupSignalHandlers()
+        
         return true
     }
 
@@ -84,6 +56,63 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             print("Error saving crash report: \(error)")
         }
     }
+    
+    func setupSignalHandlers() {
+        /*
+         signal(SIGABRT, AppDelegate.handleSignal)
+         signal(SIGILL, AppDelegate.handleSignal)
+         signal(SIGSEGV, AppDelegate.handleSignal)
+         signal(SIGFPE, AppDelegate.handleSignal)
+         signal(SIGBUS, AppDelegate.handleSignal)
+         signal(SIGPIPE, AppDelegate.handleSignal)
+        */
+        signal(SIGABRT) { signal in
+            AppDelegate.handleSignal(signal: signal)
+        }
+        signal(SIGILL) { signal in
+            AppDelegate.handleSignal(signal: signal)
+        }
+        
+        signal(SIGSEGV) { signal in
+            AppDelegate.handleSignal(signal: signal)
+        }
+        
+        signal(SIGFPE) { signal in
+            AppDelegate.handleSignal(signal: signal)
+        }
+        signal(SIGPIPE) { signal in
+            AppDelegate.handleSignal(signal: signal)
+        }
+        
+        signal(SIGBUS) { signal in
+            AppDelegate.handleSignal(signal: signal)
+        }
+
+     }
+    
+    static func handleSignal(signal: Int32) {
+           print("Signal received: \(signal)")
+
+           let crashReport = """
+           **Crash Report**
+
+           Signal: \(signal)
+           """
+
+           // Save crash report to a file
+           let fileName = "crash_log.txt"
+           let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+           let filePath = documentsPath.appendingPathComponent(fileName)
+
+           do {
+               try crashReport.write(to: filePath, atomically: true, encoding: .utf8)
+               print("Crash report saved to: \(filePath)")
+           } catch {
+               print("Error saving crash report: \(error)")
+           }
+
+           exit(signal)
+       }
 
     // MARK: UISceneSession Lifecycle
 

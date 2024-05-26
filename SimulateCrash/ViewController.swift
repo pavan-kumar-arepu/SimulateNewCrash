@@ -25,8 +25,11 @@ class ViewController: UIViewController, MFMailComposeViewControllerDelegate {
 //        let arr = Array(arrayLiteral: 1,2,4);
 //        print(arr[5]);
 //        // print(arr[5]); // This line will never be reached due to the crash
-        let optionalValue: String? = nil
-        print(optionalValue!) // This will cause a force-unwrap crash
+        //let optionalValue: String? = nil
+        //print(optionalValue!) // This will cause a force-unwrap crash
+        
+        abort() // This will cause a SIGABRT crash
+
        }
 
     func checkForCrashReport() {
